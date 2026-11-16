@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, so newly published vulnerabilities fail the build even without commits.
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+          check-latest: true
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+      - name: go mod tidy
+        run: go mod tidy -diff
+      - name: go vet
+        run: go vet ./...
+      - name: go test
+        run: go test -race -count=1 ./...
+      - name: govulncheck
+        run: go tool govulncheck ./...
+      - name: Cross-compile release platforms
+        env:
+          CGO_ENABLED: "0"
+        run: |
+          for os in linux freebsd darwin; do
+            for arch in amd64 arm64; do
+              GOOS=$os GOARCH=$arch go build -trimpath -o /dev/null .
+            done
+          done
+      - name: Third-party licenses complete
+        run: ./scripts/third-party-licenses.sh

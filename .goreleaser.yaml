@@ -1,0 +1,45 @@
+version: 2
+
+project_name: opkssh-m2m
+
+before:
+  hooks:
+    - go mod verify
+    - ./scripts/third-party-licenses.sh
+
+builds:
+  - id: opkssh-m2m
+    main: .
+    binary: opkssh-m2m
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, freebsd, darwin]
+    goarch: [amd64, arm64]
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+      - authentik/*
+      - third_party_licenses/**/*
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^Merge "
+
+release:
+  prerelease: auto
