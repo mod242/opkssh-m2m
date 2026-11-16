@@ -1,0 +1,3 @@
+v1.0.0 of this module ships no license file. The upstream repository added
+this MIT license later (GitHub reports the repository as MIT).
+Source: https://github.com/yeqown/reedsolomon/blob/c5f4bc9af094852b52e593a5f964647c43028c51/LICENSE
