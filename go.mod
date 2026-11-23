@@ -4,8 +4,8 @@ go 1.26.0
 
 require (
 	github.com/lestrrat-go/jwx/v3 v3.4.0
-	github.com/openpubkey/openpubkey v0.30.0
-	github.com/openpubkey/opkssh v0.19.2
+	github.com/openpubkey/openpubkey v0.30.1
+	github.com/openpubkey/opkssh v0.20.0
 	golang.org/x/crypto v0.59.0
 )
 
